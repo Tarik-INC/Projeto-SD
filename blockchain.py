@@ -52,7 +52,7 @@ class Blockchain(object):
         block = {
             'index': len(self.chain) + 1,
             'timestamp': time(),
-            'transaction': self.current_transactions,
+            'transactions': self.current_transactions,
             'proof': proof,
             'previous_hash': previous_hash or self.hash(self.chain[-1]),
         }
@@ -66,7 +66,7 @@ class Blockchain(object):
     def new_transaction(self, sender, recipient, amount):
         
         """ 
-        Adiciona uma nova transação para a lista de transações em um próximo Bloco minado
+        Adiciona uma nova transação para a lista de transações em um próximo bloco minado
         
         :param sender: <str> Endereço do emissor
         :param recipient: <str> Endereço do recebedor
