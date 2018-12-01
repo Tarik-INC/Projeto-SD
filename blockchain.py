@@ -13,7 +13,7 @@ class Blockchain(object):
     def proof_of_work(self, last_proof):
         """
         Algoritimo simples de uma prova de trabalho
-            - Ache um número p' tal que o has(pp') contenha 4 zeros seguidos, 
+            - Ache um número p' tal que o hash(pp') contenha 4 zeros seguidos, 
             onde p representa o número de prova anterior e p' o atual
         
             :param last_proof: <int>
@@ -28,7 +28,7 @@ class Blockchain(object):
     @staticmethod
     def valid_proof(last_proof, proof):
         """
-        Valida a prova: Faz has(last_proof, proof) contem 4 zeros seguidos?
+        Valida a prova: Faz hash(last_proof, proof) contem 4 zeros seguidos?
         :param last_proof: <int> Prova anterior
         :param proof: <int> Prova atual
         :return: <bool> Verdadeiro se correto, Falso se não.
