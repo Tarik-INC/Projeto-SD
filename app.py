@@ -7,7 +7,7 @@ from time import time
 app = Flask(__name__)
 
 # Gera um endereço global e único para esse nodo G
-node_identifier = str(uuid4()).replace('-', '')
+node_id = str(uuid4()).replace('-', '')
 
 # Instancia a blockchain
 blockchain = Blockchain()
@@ -24,7 +24,7 @@ def mine():
     # Colocando o sender como zero evidencio que o no esta recebendo uma recompensa
     blockchain.new_transaction(
         sender = '0',
-        recipient=node_identifier,
+        recipient= node_id,
         amount=1,
     )
 
@@ -54,6 +54,7 @@ def new_transaction():
     index = blockchain.new_transaction(
         values['sender'], values['recipient'], values['amount'])
 
+
     response = {'message': f'Transaction will be added to Block {index}'}
     return jsonify(response), 201
 
@@ -67,3 +68,4 @@ def full_chain():
 
 if __name__ == 'main':
     app.run('0.0.0.0', 5000)
+
