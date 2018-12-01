@@ -1,14 +1,30 @@
 import hashlib
 import json
+import requests
 from time import time
+from urllib.parse import urlparse
+
+
 
 class Blockchain(object):
+
     def __init__(self):
         self.chain = []
         self.current_transactions = []
 
         #Criação do bloco genesis
         self.new_block(previous_hash=1, proof=100)
+        # Armazenar informações de nodos na rede
+        self.nodes = set()
+   
+    def register_node(self, address):
+        """
+        Adiciona um novo nodo para a lista de nodos conhecidos
+        
+        :param addres: <str> Endereço de um nodo. Eg. 'http://192.168.0.12:5000'
+        """
+        parsed_url = urlparse(address)       
+        self.nodes.add(parsed_url.netloc)
 
     def proof_of_work(self, last_proof):
         """
@@ -96,6 +112,64 @@ class Blockchain(object):
         :return: <str> hash
         """
 
-        # Nos devemos ter certeza que nosso dicionário está ordenado, ou nós poderemos ter hashes incorretos
+        # Nós devemos ter certeza que nosso dicionário está ordenado, ou nós poderemos ter hashes incorretos
         block_string = json.dumps(block, sort_keys=True).encode()
         return hashlib.sha256(block_string).hexdigest()
+    
+    def valid_chain(self, chain):
+        """
+        Determina se uma determinada cadeia de blocos(blockchain) é válida
+        
+        :param chain: <list> A blockchain
+        :return: <bool> True se válido, False se não
+        """
+
+        last_block = chain[0]
+        index = 1
+
+        while index < len(chain):
+            block = chain[index]
+
+            if block['previous_hash'] != self.hash(last_block):
+                return False
+            
+            if not( self.valid_proof(last_block['proof'], block['proof'])):
+                return False
+            
+            last_block = block
+            index += 1
+
+        return True
+    
+    def resolve_conflicts(self):
+        """
+            Algoritmo de consenso, que resolve conflitos substituindo
+            nossa cadeira pelo maior existente na rede
+
+            :return: <bool> True se nossa cadeia foi substituida, Flase se não
+        """
+
+        neighbours = self.nodes
+        new_chain = None
+
+        # Garantirmos o interesse apenas por cadeias maiores que a nossa
+        max_length = len(self.chain)
+
+        # Pega e verifica as cadeias de todos os nós na rede
+        for node in neighbours:
+            response = requests.get(f'http://{node}/chain')
+
+            if response.status_code == 200:
+                length = response.json()['length']
+                chain = response.json()['chain']
+
+        # Checa se o tamanho é maior e se a cadeia é valida
+            if length > max_length and self.valid_chain(chain):
+                max_length = length
+                new_chain = chain    
+
+        if new_chain:
+            self.chain = new_chain
+            return True
+        
+        return False
