@@ -1,0 +1,16 @@
+.container {
+  margin-top: 100px;
+  text-align: center;
+}
+
+.container .refresh_button {
+    margin-bottom: 80px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.icon_container {
+  margin-top: 200px;
+  margin-left: 50%;
+  margin-right: auto;
+}

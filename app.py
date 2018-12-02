@@ -1,16 +1,24 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS, cross_origin
 from blockchain import Blockchain
 from uuid import uuid4
 from time import time
 
 # Instancia o nodo
 app = Flask(__name__)
+CORS(app, support_credentials=True)
 
 # Gera um endereço global e único para esse nodo G
 node_id = str(uuid4()).replace('-', '')
 
 # Instancia a blockchain
 blockchain = Blockchain()
+
+@app.route('/')
+@cross_origin()
+def origin():
+   return "The begging of everything"
+
 
 @app.route('/mine', methods=['GET'])
 def mine():
