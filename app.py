@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
 from blockchain import Blockchain
+from carteira import Carteira
 from uuid import uuid4
 from time import time
 
@@ -28,7 +29,7 @@ def mine():
     last_proof = last_block['proof']
     proof = blockchain.proof_of_work(last_proof)
 
-    # Recompensa por acha a prova.
+    # Recompensa por achar a prova.
     # Colocando o sender como zero evidencio que o no esta recebendo uma recompensa
     blockchain.new_transaction(
         sender = '0',
@@ -58,13 +59,20 @@ def new_transaction():
     if not all(k in values for k in required):
         return 'Missing values', 400
 
+    # Verifica se o pagador de fato possui saldo
+    # para realizar a transação
+    saldo = Carteira.saldo(values['sender'], blockchain)
+    print("\nSaldo de " + str(values['sender']) + " = " + str(saldo))
+    if saldo < values['amount']:
+        return 'Saldo insuficiente', 400
+
     # Cria uma nova transação
     index = blockchain.new_transaction(
         values['sender'], values['recipient'], values['amount'])
 
-
     response = {'message': f'Transaction will be added to Block {index}'}
     return jsonify(response), 201
+
 
 @app.route('/chain', methods=['GET'])
 def full_chain():
@@ -83,10 +91,10 @@ def register_nodes():
     nodes = values.get('nodes')
     if nodes is None:
        return "Error: Please supply a valid list of nodes", 400
-    
+
     for node in nodes:
         blockchain.register_node(node)
-    
+
     response = {
         'message': 'New nodes have been added',
         'total_nodes': list(blockchain.nodes)
