@@ -10,12 +10,12 @@ const Transactions = (props) => {
     <div>
         <BootstrapTable data={props.data} striped hover>
             <TableHeaderColumn isKey headerAlign='center' width='40%' dataField='sender'>
-                Remetente
+                Emisssor
         </TableHeaderColumn>
             <TableHeaderColumn dataField='recipient' headerAlign='center' width='40%'>
-                Emissor
+                Destinatário
         </TableHeaderColumn>
-            <TableHeaderColumn dataField='amount' headerAlign='center'>
+            <TableHeaderColumn dataField='amount' headerAlign='center' dataAlign='center'>
                 Quantidade
         </TableHeaderColumn>
         </BootstrapTable>

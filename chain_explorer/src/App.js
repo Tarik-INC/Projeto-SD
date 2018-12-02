@@ -57,10 +57,10 @@ class App extends Component {
     if (this.state.loading === false) {
       displayResult = (
         this.state.minedBlocks.map((item, index) => (
-          <div>
-            <h1>
-              Bloco {item.index}
-            </h1>
+          <div className='block'>
+            
+            <h1> Bloco {item.index === 1 ?  'Gênesis': item.index  } </h1>
+    
             <div>
               <Transactions data={item.transactions} />
             </div>
