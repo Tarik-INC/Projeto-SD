@@ -25,6 +25,7 @@ def origin():
 @app.route('/mine', methods=['GET'])
 def mine():
 
+    print('Iniciating mining....')
     # Executa o algoritimo de proof of work de forma a obter a proxima prova
     last_block = blockchain.last_block
     last_proof = last_block['proof']
@@ -50,6 +51,8 @@ def mine():
     }
 
     blockchain.notify_nodes()
+
+    print('Mining complete!')
 
     return jsonify(resp), 200
 
