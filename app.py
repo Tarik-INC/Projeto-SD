@@ -49,7 +49,7 @@ def mine():
     }
 
     blockchain.notify_nodes()
-    
+
     return jsonify(resp), 200
 
 
@@ -125,4 +125,7 @@ def consensus():
 
 if __name__ == 'main':
     app.run('0.0.0.0', 5000)
+
+
+
 
