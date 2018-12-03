@@ -110,16 +110,20 @@ def consensus():
     # Verifica se é necessário substituir a cadeia atual
     replaced = blockchain.resolve_conflicts()
 
+    print("Initiating consensus algorithm...")
+
     if replaced:
         response = {
             'message': 'Our chain was replaced',
             'new_chain': blockchain.chain
         }
+        print("Our chain was replaced")
     else:
         response = {
             'message': 'Our chain is authoritative',
             'chain': blockchain.chain
         }
+        print("Our chain is authoritative")
 
     return jsonify(response), 200
 
