@@ -124,7 +124,9 @@ def consensus():
     return jsonify(response), 200
 
 if __name__ == 'main':
+    
     app.run('0.0.0.0', 5000)
+
 
 
 
