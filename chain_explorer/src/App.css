@@ -9,6 +9,10 @@
     margin-right: auto;
 }
 
+.container .mining_button {
+  margin-bottom: 50px;
+}
+
 .icon_container {
   margin-top: 200px;
   margin-left: 50%;

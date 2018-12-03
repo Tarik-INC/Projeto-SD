@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import axios from 'axios';
-// import API from './utils/api'
+import API from './utils/api'
+import axios from 'axios'
 import {PacmanLoader } from 'react-spinners';
 import {Button} from 'reactstrap';
 import './App.css';
@@ -12,11 +12,12 @@ class App extends Component {
     requestError : null,
     minedBlocks : [],
     loading: true,
+    isMining: false,
   };
   
   componentDidMount() {
   
-    axios.get('http://localhost:5000/chain')
+    API.get('chain')
     .then(response => response.data )
     .then(data => this.setState({minedBlocks: data.chain, loading:false}))
     .catch(err => {
@@ -34,7 +35,7 @@ class App extends Component {
     })
 
    setTimeout(() => {
-     axios.get('http://localhost:5000/chain')
+     API.get('chain')
        .then(response => response.data)
        .then(data => this.setState((state) => {
          return {
@@ -50,6 +51,22 @@ class App extends Component {
     
   }
 
+  miningHandler = () => {
+
+    this.setState({isMining: true})
+    
+    axios.get('http://localhost:5000/mine')
+    .then(response => response.data)
+    .then( data => this.refreshHandler())
+
+
+    setTimeout(() => {
+      this.setState({isMining: false})
+    }, 3000);
+
+   
+  }
+
   render() {
 
     let displayResult;
@@ -58,9 +75,7 @@ class App extends Component {
       displayResult = (
         this.state.minedBlocks.map((item, index) => (
           <div className='block'>
-            
             <h1> Bloco {item.index === 1 ?  'Gênesis': item.index  } </h1>
-    
             <div>
               <Transactions data={item.transactions} />
             </div>
@@ -78,6 +93,7 @@ class App extends Component {
 
     return (
       <div className='container'>
+        <Button disabled={this.state.isMining} ref='mining_btn' color='warning' size='lg' onClick={this.miningHandler} className='mining_button'> {this.state.isMining? 'Minerando...': 'Minerar'} </Button>
         <Button color='primary' size = 'lg' block className='refresh_button' onClick={this.refreshHandler}> Atualizar </Button>
         
         {displayResult}
