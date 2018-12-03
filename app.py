@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request, render_template
+from flask_cors import CORS, cross_origin
 from blockchain import Blockchain
 from carteira import Carteira
 from uuid import uuid4
@@ -7,12 +8,19 @@ from flask import send_file
 
 # Instancia o nodo
 app = Flask(__name__)
+CORS(app, support_credentials=True)
 
 # Gera um endereço global e único para esse nodo G
 node_id = str(uuid4()).replace('-', '')
 
 # Instancia a blockchain
 blockchain = Blockchain()
+
+@app.route('/')
+@cross_origin()
+def origin():
+   return "The begginning of everything"
+
 
 @app.route('/mine', methods=['GET'])
 def mine():
@@ -23,7 +31,7 @@ def mine():
     proof = blockchain.proof_of_work(last_proof)
 
     # Recompensa por achar a prova.
-    # Colocando o sender como zero evidencio que o no esta recebendo uma recompensa
+    # Colocando o sender como zero evidencia que o nó esta recebendo uma recompensa
     blockchain.new_transaction(
         sender = '0',
         recipient= node_id,
@@ -40,6 +48,9 @@ def mine():
         'proof': block['proof'],
         'previous_hash': block['previous_hash']
     }
+
+    blockchain.notify_nodes()
+
     return jsonify(resp), 200
 
 
@@ -57,6 +68,7 @@ def new_transaction():
     # para realizar a transação
     saldo = Carteira.saldo(values['sender'], blockchain)
     print("\nSaldo de " + str(values['sender']) + " = " + str(saldo))
+
     if saldo < float(values['amount']):
         return 'Saldo insuficiente', 400
 
@@ -64,7 +76,7 @@ def new_transaction():
     index = blockchain.new_transaction(
         values['sender'], values['recipient'], values['amount'])
 
-    response = {'message': f'A trasação será adicionada ao bloco {index}'}
+    response = {'message': f'A transacao sera adicionada ao bloco {index}'}
     return jsonify(response), 201
 
 @app.route('/transaction')
@@ -95,13 +107,14 @@ def register_nodes():
 
     nodes = values.get('nodes')
     if nodes is None:
-       return "Erro: Por favor, entre com um lista válida de nós", 400
+       return "Erro: Por favor, entre com um lista valida de nos", 400
+
 
     for node in nodes:
         blockchain.register_node(node)
 
     response = {
-        'message': 'Novos nós foram adicionados',
+        'message': 'Novos nos foram adicionados',
         'total_nodes': list(blockchain.nodes)
     }
     return jsonify(response), 201
@@ -114,17 +127,22 @@ def consensus():
 
     if replaced:
         response = {
-            'message': 'Nossa blockchain foi substituída',
+            'message': 'Nossa blockchain foi substituida',
             'new_chain': blockchain.chain
         }
     else:
         response = {
-            'message': 'Nossa blockchain é autoritativa',
+            'message': 'Nossa blockchain e autoritativa',
             'chain': blockchain.chain
         }
 
     return jsonify(response), 200
 
 if __name__ == 'main':
+    
     app.run('0.0.0.0', 5000)
+
+
+
+
 
