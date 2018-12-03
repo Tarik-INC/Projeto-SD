@@ -87,7 +87,7 @@ class Blockchain(object):
         
         block_index = block['index']
 
-        print(f'A new block has been added, it was {block_index} as index and was created in {block_time} ')
+        print(f'A new block with index {block_index} has been added')
 
         self.current_transactions = []
 

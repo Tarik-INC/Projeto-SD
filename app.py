@@ -86,6 +86,7 @@ def new_transaction():
 def transacao():
     return render_template('carteira.html')
 
+# Metódo incompleto
 @app.route('/carteira/saldo', methods=['GET', 'POST'])
 def get_saldo():
     values = request.get_json()
