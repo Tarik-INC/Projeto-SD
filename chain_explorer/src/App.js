@@ -93,8 +93,8 @@ class App extends Component {
 
     return (
       <div className='container'>
-        <Button disabled={this.state.isMining} ref='mining_btn' color='warning' size='lg' onClick={this.miningHandler} className='mining_button'> {this.state.isMining? 'Minerando...': 'Minerar'} </Button>
-        <Button color='primary' size = 'lg' block className='refresh_button' onClick={this.refreshHandler}> Atualizar </Button>
+        <Button disabled={this.state.isMining}  ref='mining_btn' color='warning' size='lg' onClick={this.miningHandler} className='mining_button'> {this.state.isMining? 'Minerando...': 'Minerar'} </Button>
+        <Button color='primary' size = 'lg'  className='refresh_button' onClick={this.refreshHandler}> Atualizar </Button>
         
         {displayResult}
         {/* {this.state.minedBlocks.map((item, index) => (
