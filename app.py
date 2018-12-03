@@ -18,7 +18,7 @@ blockchain = Blockchain()
 @app.route('/')
 @cross_origin()
 def origin():
-   return "The begging of everything"
+   return "The begginning of everything"
 
 
 @app.route('/mine', methods=['GET'])
@@ -30,7 +30,7 @@ def mine():
     proof = blockchain.proof_of_work(last_proof)
 
     # Recompensa por achar a prova.
-    # Colocando o sender como zero evidencio que o no esta recebendo uma recompensa
+    # Colocando o sender como zero evidencia que o nó esta recebendo uma recompensa
     blockchain.new_transaction(
         sender = '0',
         recipient= node_id,
@@ -47,6 +47,9 @@ def mine():
         'proof': block['proof'],
         'previous_hash': block['previous_hash']
     }
+
+    blockchain.notify_nodes()
+    
     return jsonify(resp), 200
 
 
@@ -64,7 +67,7 @@ def new_transaction():
     saldo = Carteira.saldo(values['sender'], blockchain)
     print("\nSaldo de " + str(values['sender']) + " = " + str(saldo))
     if saldo < values['amount']:
-        return 'Saldo insuficiente', 400
+        return 'Insufficient funds ', 400
 
     # Cria uma nova transação
     index = blockchain.new_transaction(
@@ -90,7 +93,7 @@ def register_nodes():
 
     nodes = values.get('nodes')
     if nodes is None:
-       return "Error: Please supply a valid list of nodes", 400
+       return "Error: Please supply a complete list of nodes", 400
 
     for node in nodes:
         blockchain.register_node(node)

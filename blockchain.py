@@ -5,42 +5,53 @@ from time import time
 from urllib.parse import urlparse
 
 
-
 class Blockchain(object):
 
     def __init__(self):
         self.chain = []
         self.current_transactions = []
 
-        #Criação do bloco genesis
+        # Criação do bloco genesis
         self.new_block(previous_hash=1, proof=100)
         # Armazenar informações de nodos na rede
         self.nodes = set()
-   
+
     def register_node(self, address):
         """
         Adiciona um novo nodo para a lista de nodos conhecidos
-        
+
         :param addres: <str> Endereço de um nodo. Eg. 'http://192.168.0.12:5000'
         """
-        parsed_url = urlparse(address)       
+        parsed_url = urlparse(address)
         self.nodes.add(parsed_url.netloc)
+
+    def notify_nodes(self):
+        """
+            Metódo responsável por automaticamente notificar os nós da rede,
+            invocado apos um nó minerar um bloco, na qual se torna necessário
+            saber quem possui a maior cadeia de blocos em uma rede
+        """
+
+        for node in self.nodes:
+            response = requests.get(f'http://{node}/nodes/resolve')
+            print(
+                f'Notifying all known nodes after mining a block, the result for node {node} is {response.message}')
 
     def proof_of_work(self, last_proof):
         """
         Algoritimo simples de uma prova de trabalho
             - Ache um número p' tal que o hash(pp') contenha 4 zeros seguidos, 
             onde p representa o número de prova anterior e p' o atual
-        
+
             :param last_proof: <int>
             :return: <int>
         """
         proof = 0
         while self.valid_proof(last_proof, proof) is False:
             proof += 1
-        
+
         return proof
-    
+
     @staticmethod
     def valid_proof(last_proof, proof):
         """
@@ -53,8 +64,6 @@ class Blockchain(object):
         guess = f'{last_proof}{proof}'.encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
         return guess_hash[:4] == "0000"
-
-
 
     def new_block(self, proof, previous_hash=None):
         """
@@ -78,30 +87,26 @@ class Blockchain(object):
         self.chain.append(block)
         return block
 
-        
     def new_transaction(self, sender, recipient, amount):
-        
         """ 
         Adiciona uma nova transação para a lista de transações em um próximo bloco minado
-        
+
         :param sender: <str> Endereço do emissor
         :param recipient: <str> Endereço do recebedor
         :param amount: <int> Quantidade
         :return: <int> Index do bloco que irá armazenar a transação
         """
         self.current_transactions.append({
-            'sender':sender,
+            'sender': sender,
             'recipient': recipient,
             'amount': amount,
         })
 
         return self.last_block['index'] + 1
-        
-    
-    
+
     @property
     def last_block(self):
-        #Retorna o ultimo bloco na cadeia
+        # Retorna o ultimo bloco na cadeia
         return self.chain[-1]
 
     @staticmethod
@@ -115,11 +120,11 @@ class Blockchain(object):
         # Nós devemos ter certeza que nosso dicionário está ordenado, ou nós poderemos ter hashes incorretos
         block_string = json.dumps(block, sort_keys=True).encode()
         return hashlib.sha256(block_string).hexdigest()
-    
+
     def valid_chain(self, chain):
         """
         Determina se uma determinada cadeia de blocos(blockchain) é válida
-        
+
         :param chain: <list> A blockchain
         :return: <bool> True se válido, False se não
         """
@@ -132,21 +137,21 @@ class Blockchain(object):
 
             if block['previous_hash'] != self.hash(last_block):
                 return False
-            
-            if not( self.valid_proof(last_block['proof'], block['proof'])):
+
+            if not(self.valid_proof(last_block['proof'], block['proof'])):
                 return False
-            
+
             last_block = block
             index += 1
 
         return True
-    
+
     def resolve_conflicts(self):
         """
             Algoritmo de consenso, que resolve conflitos substituindo
             nossa cadeira pelo maior existente na rede
 
-            :return: <bool> True se nossa cadeia foi substituida, Flase se não
+            :return: <bool> True se nossa cadeia foi substituida, False se não
         """
 
         neighbours = self.nodes
@@ -166,10 +171,10 @@ class Blockchain(object):
         # Checa se o tamanho é maior e se a cadeia é valida
             if length > max_length and self.valid_chain(chain):
                 max_length = length
-                new_chain = chain    
+                new_chain = chain
 
         if new_chain:
             self.chain = new_chain
             return True
-        
+
         return False
