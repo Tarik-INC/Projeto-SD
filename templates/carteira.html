@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <!-- Required meta tags-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Font special for pages-->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet">
+
+    <!-- Main CSS-->
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/main.css') }}">
+
+</head>
+
+<script type="text/javascript">
+
+	function enviarTransacao(){
+		var req = new XMLHttpRequest();
+		var url = "http://localhost:5000/transactions/new";
+		req.open("POST", url, true);
+		req.setRequestHeader("Content-Type", "application/json");
+		req.onreadystatechange = function () {
+		    if (req.readyState === 4) {
+		    	var resposta = req.responseText
+		        window.alert(resposta);
+		    }
+		};
+
+		var pagador = document.getElementById('pagador').value;
+		var receptor = document.getElementById('receptor').value;
+		var valor = document.getElementById('valor').value;
+
+		var data = JSON.stringify({"sender": pagador, "recipient": receptor, "amount": valor});
+		req.send(data);
+	}
+
+</script>
+
+<body>
+    <div class="page-wrapper bg-dark p-t-100 p-b-50">
+        <div class="wrapper wrapper--w900">
+            <div class="card card-6">
+                <div class="card-heading">
+                    <h2 class="title">Nova transação</h2>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="form-row">
+                            <div class="name">Endereço do pagador</div>
+                            <div class="value">
+                                <input id="pagador" class="input--style-6" type="text" name="end_origem" placeholder="ex.:fec9f7cc80a34d06a1ed714911f0656c">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="name">Endereço do receptor</div>
+                            <div class="value">
+                                <div class="input-group">
+                                    <input id="receptor" class="input--style-6" type="text" name="end_destino" placeholder="ex.: b86df92a13a249a5b80d5cf27d74f7c5">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="name">Valor</div>
+                            <div class="value">
+                                <div class="input-group">
+                                    <input id="valor" class="input--style-6" type="number" step="0.00000001" name="end_destino" placeholder="ex.: 0.00050000">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="value">
+                                <div class="label--desc">Confira bem o endereço do receptor e o valor pois, uma vez confirmada, a transação é irreversível</div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn--radius-2 btn--blue-2" onclick="enviarTransacao()">Enviar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+<!-- end document-->

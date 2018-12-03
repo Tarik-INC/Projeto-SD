@@ -13,5 +13,5 @@ class Carteira(object):
                     entrada += valor
                 if transacao['sender'] == endereco:
                     saida += valor
-        saldo = entrada - saida;
+        saldo = entrada - saida
         return saldo

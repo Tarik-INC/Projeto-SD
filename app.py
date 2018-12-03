@@ -1,8 +1,9 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from blockchain import Blockchain
 from carteira import Carteira
 from uuid import uuid4
 from time import time
+from flask import send_file
 
 # Instancia o nodo
 app = Flask(__name__)
@@ -48,23 +49,35 @@ def new_transaction():
 
     # Checa se os dados estao presentes na requisição POST
     required = ['sender', 'recipient', 'amount']
-    if not all(k in values for k in required):
-        return 'Missing values', 400
+    if not all(k in values for k in required) or values['sender'] == ''\
+            or values['recipient'] == '' or values['amount'] == '':
+        return 'Faltam valores', 400
 
     # Verifica se o pagador de fato possui saldo
     # para realizar a transação
     saldo = Carteira.saldo(values['sender'], blockchain)
     print("\nSaldo de " + str(values['sender']) + " = " + str(saldo))
-    if saldo < values['amount']:
+    if saldo < float(values['amount']):
         return 'Saldo insuficiente', 400
 
     # Cria uma nova transação
     index = blockchain.new_transaction(
         values['sender'], values['recipient'], values['amount'])
 
-    response = {'message': f'Transaction will be added to Block {index}'}
+    response = {'message': f'A trasação será adicionada ao bloco {index}'}
     return jsonify(response), 201
 
+@app.route('/transaction')
+def transacao():
+    return render_template('carteira.html')
+
+@app.route('/carteira/saldo', methods=['GET', 'POST'])
+def get_saldo():
+    values = request.get_json()
+    saldo = Carteira.saldo(values['sender'], blockchain)
+    response = {
+        'saldo': blockchain.chain
+    }
 
 @app.route('/chain', methods=['GET'])
 def full_chain():
@@ -82,13 +95,13 @@ def register_nodes():
 
     nodes = values.get('nodes')
     if nodes is None:
-       return "Error: Please supply a valid list of nodes", 400
+       return "Erro: Por favor, entre com um lista válida de nós", 400
 
     for node in nodes:
         blockchain.register_node(node)
 
     response = {
-        'message': 'New nodes have been added',
+        'message': 'Novos nós foram adicionados',
         'total_nodes': list(blockchain.nodes)
     }
     return jsonify(response), 201
@@ -101,12 +114,12 @@ def consensus():
 
     if replaced:
         response = {
-            'message': 'Our chain was replaced',
+            'message': 'Nossa blockchain foi substituída',
             'new_chain': blockchain.chain
         }
     else:
         response = {
-            'message': 'Our chain is authoritative',
+            'message': 'Nossa blockchain é autoritativa',
             'chain': blockchain.chain
         }
 
