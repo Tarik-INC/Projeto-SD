@@ -5,6 +5,8 @@ import { PacmanLoader } from 'react-spinners';
 import { Button } from 'reactstrap';
 import './App.css';
 import Transactions from './Components/transactions/Transactions';
+import Sound from 'react-sound';
+
 
 class App extends Component {
 
@@ -115,7 +117,7 @@ class App extends Component {
       <div className='container'>
         <Button disabled={this.state.isMining} ref='mining_btn' color='warning' size='lg' onClick={this.miningHandler} className='mining_button'> {this.state.isMining ? 'Minerando...' : 'Minerar'} </Button>
         <Button color='primary' size='lg' className='refresh_button' onClick={this.refreshHandler}> Atualizar </Button>
-
+        <Sound url='jackhammer.mp3' autoLoad={true} playStatus={this.state.mining ? Sound.status.PLAYING : Sound.status.STOPPED}/>
         {displayResult}
         {/* {this.state.minedBlocks.map((item, index) => (
           <div>

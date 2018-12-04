@@ -151,10 +151,10 @@ def consensus():
             'message': 'Nossa blockchain foi substituida',
             'new_chain': blockchain.chain
         }
-        print("Nossa cadeira foi substituida")
+        print("Nossa cadeia foi substituida")
     else:
         response = {
-            'message': 'Nossa blockchain e autoritativa',
+            'message': 'Nossa blockchain é autoritativa',
             'chain': blockchain.chain
         }
         print("Nossa cadeia é autoritativa")

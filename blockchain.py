@@ -5,6 +5,7 @@ from time import time
 from urllib.parse import urlparse
 from datetime import datetime
 
+
 class Blockchain(object):
 
     def __init__(self):
@@ -34,8 +35,9 @@ class Blockchain(object):
 
         for node in self.nodes:
             response = requests.get(f'http://{node}/nodes/resolve')
+            msg = response.json()['message']
             print(
-                f'Notifying all known nodes after mining a block, the result for node {node} is {response["message"]}')
+                f'Notificando todos os nós da rede após minerar um bloco, o resultado é {msg} ')
 
     def proof_of_work(self, last_proof):
         """
@@ -84,10 +86,11 @@ class Blockchain(object):
 
         block_time = datetime.utcfromtimestamp(
             block['timestamp']).strftime(' % d-%m-%Y % H: % M: % S')
-        
+
         block_index = block['index']
 
-        print(f'A new block with index {block_index} has been added')
+        print(
+            f'Um novo bloco#{block_index} foi criado\nhash:{Blockchain.hash(block)}')
 
         self.current_transactions = []
 
@@ -110,7 +113,7 @@ class Blockchain(object):
         })
 
         print(
-            f"New transaction added. From {sender} to {recipient} and {amount} as amount")
+            f"Nova transação adicionada. De {sender} para {recipient} com {amount} como quantidade")
 
         return self.last_block['index'] + 1
 
