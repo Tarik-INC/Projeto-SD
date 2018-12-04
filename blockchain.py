@@ -10,7 +10,11 @@ class Blockchain(object):
 
     def __init__(self):
         self.chain = []
-        self.current_transactions = []
+        self.current_transactions = [{
+            'sender': 0,
+            'recipient':'Márcio',
+            'amount':100,
+        }]
 
         # Criação do bloco genesis
         self.new_block(previous_hash=1, proof=100)
@@ -37,7 +41,11 @@ class Blockchain(object):
             response = requests.get(f'http://{node}/nodes/resolve')
             msg = response.json()['message']
             print(
-                f'Notificando todos os nós da rede após minerar um bloco, o resultado é {msg} ')
+                f'Notificando todos os nós da rede após minerar um bloco, o resultado do nó {node} eh "{msg}" ')
+            
+            if(msg == 'Nossa blockchain e autoritativa'):
+                self.chain = response.json()['chain']
+            
 
     def proof_of_work(self, last_proof):
         """
@@ -167,14 +175,16 @@ class Blockchain(object):
             :return: <bool> True se nossa cadeia foi substituida, False se não
         """
 
-        neighbours = self.nodes
+        nodes_in_network = self.nodes
+        
         new_chain = None
 
         # Garantirmos o interesse apenas por cadeias maiores que a nossa
         max_length = len(self.chain)
 
         # Pega e verifica as cadeias de todos os nós na rede
-        for node in neighbours:
+        for node in nodes_in_network:
+            
             response = requests.get(f'http://{node}/chain')
 
             if response.status_code == 200:

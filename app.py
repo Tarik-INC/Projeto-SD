@@ -100,6 +100,7 @@ def get_saldo():
         'saldo': blockchain.chain
     }
 
+    # return jsonify()
 
 @app.route('/chain', methods=['GET'])
 def full_chain():
@@ -130,14 +131,14 @@ def register_nodes():
     }
     return jsonify(response), 201
 
-@app.route('/nodes')
+@app.route('/nodes', methods=['GET'])
 def get_all_nodes():
 
     response = {
         'nodes': blockchain.nodes
     }
 
-    return jsonify(response,200)
+    return jsonify(response),200
 
 @app.route('/nodes/resolve', methods=['GET'])
 def consensus():
