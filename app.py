@@ -5,6 +5,7 @@ from carteira import Carteira
 from uuid import uuid4
 from time import time
 from flask import send_file
+import json
 
 # Instancia o nodo
 app = Flask(__name__)
@@ -16,16 +17,17 @@ node_id = str(uuid4()).replace('-', '')
 # Instancia a blockchain
 blockchain = Blockchain()
 
+
 @app.route('/')
 @cross_origin()
 def origin():
-   return "The begginning of everything"
+    return "The begginning of everything"
 
 
 @app.route('/mine', methods=['GET'])
 def mine():
 
-    print('Iniciating mining....')
+    print('Iniciando mineração....')
     # Executa o algoritimo de proof of work de forma a obter a proxima prova
     last_block = blockchain.last_block
     last_proof = last_block['proof']
@@ -34,8 +36,8 @@ def mine():
     # Recompensa por achar a prova.
     # Colocando o sender como zero evidencia que o nó esta recebendo uma recompensa
     blockchain.new_transaction(
-        sender = '0',
-        recipient= node_id,
+        sender='0',
+        recipient=node_id,
         amount=1,
     )
 
@@ -43,7 +45,7 @@ def mine():
     block = blockchain.new_block(proof, previous_hash)
 
     resp = {
-        'message': 'new block created',
+        'message': 'Novo bloco criado',
         'index': block['index'],
         'transactions': block['transactions'],
         'proof': block['proof'],
@@ -52,7 +54,7 @@ def mine():
 
     blockchain.notify_nodes()
 
-    print('Mining complete!')
+    print('Mineração completa!')
 
     return jsonify(resp), 200
 
@@ -82,11 +84,14 @@ def new_transaction():
     response = {'message': f'A transacao sera adicionada ao bloco {index}'}
     return jsonify(response), 201
 
+
 @app.route('/transaction')
 def transacao():
     return render_template('carteira.html')
 
 # Metódo incompleto
+
+
 @app.route('/carteira/saldo', methods=['GET', 'POST'])
 def get_saldo():
     values = request.get_json()
@@ -94,6 +99,7 @@ def get_saldo():
     response = {
         'saldo': blockchain.chain
     }
+
 
 @app.route('/chain', methods=['GET'])
 def full_chain():
@@ -104,15 +110,16 @@ def full_chain():
     }
     return jsonify(response), 200
 
-@app.route('/nodes/register',methods=['POST'])
+
+@app.route('/nodes/register', methods=['POST'])
 def register_nodes():
     # Recebe  uma lista de novos nós conhecidos
-    values = request.data
+    values = request.get_json()
+    values = json.loads(values)
+    nodes = values['nodes']
 
-    nodes = values.get('nodes')
     if nodes is None:
-       return "Erro: Por favor, entre com um lista valida de nos", 400
-
+        return "Erro: Por favor, entre com um lista valida de nos", 400
 
     for node in nodes:
         blockchain.register_node(node)
@@ -123,34 +130,38 @@ def register_nodes():
     }
     return jsonify(response), 201
 
+@app.route('/nodes')
+def get_all_nodes():
+
+    response = {
+        'nodes': blockchain.nodes
+    }
+
+    return jsonify(response,200)
 
 @app.route('/nodes/resolve', methods=['GET'])
 def consensus():
     # Verifica se é necessário substituir a cadeia atual
     replaced = blockchain.resolve_conflicts()
 
-    print("Initiating consensus algorithm...")
+    print("Iniciando algoritimo de consenso...")
 
     if replaced:
         response = {
             'message': 'Nossa blockchain foi substituida',
             'new_chain': blockchain.chain
         }
-        print("Our chain was replaced")
+        print("Nossa cadeira foi substituida")
     else:
         response = {
             'message': 'Nossa blockchain e autoritativa',
             'chain': blockchain.chain
         }
-        print("Our chain is authoritative")
+        print("Nossa cadeia é autoritativa")
 
     return jsonify(response), 200
 
-if __name__ == 'main':
-    
-    app.run('0.0.0.0', 5000)
 
+if __name__ == '__main__':
 
-
-
-
+    app.run('0.0.0.0', port=5000)
