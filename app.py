@@ -41,6 +41,9 @@ def mine():
         amount=1,
     )
 
+    #Pode acontecer da cadeia do nó ser substituída, nesse caso as transações são armazenadas
+    # e enviadas para o metódo notify_nodes
+    backup_transactions = blockchain.current_transactions
     previous_hash = blockchain.hash(last_block)
     block = blockchain.new_block(proof, previous_hash)
 
@@ -52,7 +55,8 @@ def mine():
         'previous_hash': block['previous_hash']
     }
 
-    blockchain.notify_nodes()
+    # Em caso de substituição da cadeia as transações são mantidas
+    blockchain.notify_nodes(previous_transactions=backup_transactions)
 
     print('Mineração completa!')
 
@@ -135,7 +139,7 @@ def register_nodes():
 def get_all_nodes():
 
     response = {
-        'nodes': blockchain.nodes
+        'nodes': list(blockchain.nodes)
     }
 
     return jsonify(response),200

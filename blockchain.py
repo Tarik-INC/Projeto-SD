@@ -30,11 +30,14 @@ class Blockchain(object):
         parsed_url = urlparse(address)
         self.nodes.add(parsed_url.netloc)
 
-    def notify_nodes(self):
+    def notify_nodes(self, previous_transactions):
         """
             Metódo responsável por automaticamente notificar os nós da rede,
             invocado apos um nó minerar um bloco, na qual se torna necessário
             saber quem possui a maior cadeia de blocos em uma rede
+            
+            :param previous_transactions: array[<dict>] Um array de dicionários contendo informação sobre as transações
+            anteriores ao algoritmo de mineração
         """
 
         for node in self.nodes:
@@ -45,6 +48,7 @@ class Blockchain(object):
             
             if(msg == 'Nossa blockchain e autoritativa'):
                 self.chain = response.json()['chain']
+                self.current_transactions = previous_transactions
             
 
     def proof_of_work(self, last_proof):

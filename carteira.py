@@ -10,8 +10,8 @@ class Carteira(object):
             for transacao in bloco['transactions']:
                 valor = transacao['amount']
                 if transacao['recipient'] == endereco:
-                    entrada += valor
-                if transacao['sender'] == endereco:
-                    saida += valor
+                    entrada += int(valor)
+                elif transacao['sender'] == endereco:
+                    saida += int(valor)
         saldo = entrada - saida
         return saldo
