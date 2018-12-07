@@ -28,4 +28,4 @@ npm install
 npm start
 ```
 
-![](https://gfycat.com/ElaborateTastyChupacabra)
+![](instalacao.gif)
