@@ -27,3 +27,5 @@ http://{ip_da_máquina}:5000/
 npm install
 npm start
 ```
+
+![](https://gfycat.com/ElaborateTastyChupacabra)
