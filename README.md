@@ -28,4 +28,7 @@ npm install
 npm start
 ```
 
-![](instalacao.gif)
+![](/documents/instalacao.gif)
+
+![Arquitetura do projeto](documents/arquitetura?raw=true "Arquitetura geral do sistema")
+
