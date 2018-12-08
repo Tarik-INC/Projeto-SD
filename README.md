@@ -30,5 +30,15 @@ npm start
 
 ![](/documents/instalacao.gif)
 
-![Arquitetura do projeto](documents/arquitetura?raw=true "Arquitetura geral do sistema")
+## Descrição
+
+Nesse trabalho prático, nos propusemos a criar um sistema de transações financeiras baseado no funcionamento da blockchain, que se compõem como um  registro de transações  totalmente descentralizado, que configura  a base do funcionamento da  famosa moeda virtual bitcoin. Nesse contexto, objetivamos a criação da nossa própria moeda virtual, a llibertatem (do latim liberdade),  através da criação de um sistema completo de transações em uma rede P2P, ao qual é eliminada a entidade central, responsável por validar  e armazenar as transações , presente em sistemas tradicionais como TEDS, Paypal, cartões de crédito, etc. em que a responsabilidade desta entidade é transferida para cada nó na rede, formalizando um sistema descentralizado de transações.
+
+Contudo, devido a complexidade de conhecimento apresentadas pela blockchain e limitações impostas de tempo a apresentação do projeto a disciplina, foi determinada a criação de um protótipo mais simples que se comporta de maneira semelhante, mas não igual, a uma implementação real da blockchain, de forma a lançar os primeiros passos para construção e publicação de uma moeda virtual totalmente funcional.
+
+
+
+#### Arquitetura geral do sistema
+ 
+![Arquitetura do projeto](documents/arquitetura.png?raw=true "Arquitetura geral do sistema")
 
